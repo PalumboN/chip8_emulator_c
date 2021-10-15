@@ -2,6 +2,7 @@
 
 extern "C" {
 	#include "chip8/chip8.h"
+	#include "chip8/assembler.h"
 }
 
 TEST(Chip8Interpreter, InitialRegisterState) {
@@ -49,14 +50,17 @@ TEST(Chip8Interpreter, StepAdvancesProgramCounter) {
 }
 
 TEST(Chip8Interpreter, StepOnJumpMovesProgramCounter) {
+	struct chip8_program program = chip8_assembler_init();
 	chip8_init();
 
-	// Jump 789
-	uint8_t bytes[2] = { 0x17, 0x89 };
-	chip8_load(bytes, 2);
+	chip8_jump(program, 0x789);
+
+	chip8_load(program.start, program.size);
 
 	chip8_step();
 	EXPECT_EQ(chip8_instruction_pointer, 0x789);
+
+	chip8_assembler_destroy(program);
 }
 
 TEST(Chip8Interpreter, StepOnJumpToZero) {
