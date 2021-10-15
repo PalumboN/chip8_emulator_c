@@ -32,4 +32,9 @@ uint8_t chip8_get_register_value_unsafe(uint8_t register_id);
 // If it is an error, the field value has an undefined value
 struct register_read_status chip8_get_register_value_safe(uint8_t register_id);
 
+// Version with out parameter
+// The user sends as second argument a pointer to a value holder big enough for a uint8_t
+// Return 0 if success, 1 if error
+uint8_t chip8_get_register_value_safe2(uint8_t register_id, uint8_t *value);
+
 #endif

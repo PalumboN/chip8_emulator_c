@@ -15,6 +15,16 @@ TEST(Chip8Interpreter, AccessInvalidRegister) {
 	EXPECT_EQ(chip8_get_register_value_safe(255).status, 1);
 }
 
+TEST(Chip8Interpreter, AccessInvalidRegisterWithOutputParameter) {
+	chip8_init();
+	uint8_t value_holder;
+
+	chip8_set_register_value(11, 17);
+
+	chip8_get_register_value_safe2(11, &value_holder);
+	EXPECT_EQ(value_holder, 17);
+}
+
 TEST(Chip8Interpreter, ModifyRegisters) {
 	chip8_init();
 	chip8_set_register_value(0, 1);

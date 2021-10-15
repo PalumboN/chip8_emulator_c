@@ -37,6 +37,16 @@ struct register_read_status chip8_get_register_value_safe(uint8_t register_id){
 	return status;
 }
 
+uint8_t chip8_get_register_value_safe2(uint8_t register_id, uint8_t *value_holder){
+	struct register_read_status status;
+	if (register_id > 15) {
+		//Error
+		return 1;
+	}
+	*value_holder = chip8_registers[register_id];
+	return 0;
+}
+
 void chip8_set_register_value(uint8_t register_id, uint8_t value) {
 	chip8_registers[register_id] = value;
 }
