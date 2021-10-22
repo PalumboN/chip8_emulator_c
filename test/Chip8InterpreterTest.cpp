@@ -65,12 +65,12 @@ TEST(Chip8Interpreter, StepAdvancesProgramCounter) {
 }
 
 TEST(Chip8Interpreter, StepOnJumpMovesProgramCounter) {
-	struct chip8_program program = chip8_assembler_init();
+	chip8_program program = chip8_assembler_init();
 	chip8_init();
 
 	chip8_jump(program, 0x789);
 
-	chip8_load(program.start, program.size);
+	chip8_load(chip8_get_program_start(program), chip8_get_program_size(program));
 
 	chip8_step();
 	EXPECT_EQ(chip8_instruction_pointer, 0x789);
@@ -175,17 +175,24 @@ TEST(Chip8Interpreter, StepOnSpriteImpactsGraphicalMemoryWithManyRows) {
 }
 
 TEST(Chip8Interpreter, StepOnSpriteImpactsGraphicalMemoryInTheMiddle) {
+	chip8_program program = chip8_assembler_init();
 	chip8_init();
 
-	chip8_set_register_value(5, 17);
-	chip8_set_register_value(6, 10);
+	int x_register_id = 5;
+	int y_register_id = 6;
+
+	chip8_set_register_value(x_register_id, 17);
+	chip8_set_register_value(y_register_id, 10);
 	chip8_index = CHIP8_PROGRAM_START + 2;
 
-	// sprite v5 v6 2
-	uint8_t bytes[4] = { 0xD5, 0x62, 0x55, 0x7E };
-	chip8_load(bytes, 4);
+	chip8_sprite(program, x_register_id, y_register_id, 2);
+	chip8_raw_data(program, 0x55);
+	chip8_raw_data(program, 0x7E);
+	chip8_load(chip8_get_program_start(program), chip8_get_program_size(program));
 
 	chip8_step();
 
 	assert_row(17, 11, 0, 1, 1, 1, 1, 1, 1, 0);
+
+	chip8_assembler_destroy(program);
 }
