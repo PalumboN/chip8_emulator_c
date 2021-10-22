@@ -28,11 +28,11 @@ uint8_t read_bit(uint8_t byte_to_cut, uint8_t bit_position){
 
 
 void chip8_init(){
-	chip8_instruction_pointer = 200;
+	chip8_instruction_pointer = CHIP8_PROGRAM_START;
 }
 
 void chip8_load(const uint8_t* program, size_t size){
-	memcpy(&memory[200], program, size);
+	memcpy(&memory[CHIP8_PROGRAM_START], program, size);
 }
 
 uint8_t chip8_get_register_value_unsafe(uint8_t register_id) {
@@ -81,11 +81,11 @@ void chip8_step(){
 		uint8_t x_value = chip8_get_register_value_unsafe(x_register_id);
 		uint8_t y_value = chip8_get_register_value_unsafe(y_register_id);
 
-		for(int i = 0; i < sprite_height; i++){
-			uint8_t sprite_row = memory[chip8_index + i];
+		for(int row = 0; row < sprite_height; row++){
+			uint8_t sprite_row = memory[chip8_index + row];
 			for(int bit_position = 0; bit_position < 8; bit_position++){
 				uint8_t pixel = read_bit(sprite_row, bit_position);
-				chip8_graphical_memory[y_value + i][x_value + bit_position] = pixel;
+				chip8_graphical_memory[y_value + row][x_value + bit_position] = pixel;
 			}
 		}
 	} else if ((currentInstruction & 0xF000) == 0x8000) {

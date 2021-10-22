@@ -9,6 +9,8 @@ struct register_read_status{
 	uint8_t value;
 };
 
+#define CHIP8_PROGRAM_START 200
+
 extern int chip8_instruction_pointer;
 extern int chip8_overflow_register;
 extern int chip8_index;

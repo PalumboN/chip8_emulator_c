@@ -133,8 +133,7 @@ TEST(Chip8Interpreter, StepOnSpriteImpactsGraphicalMemory) {
 	chip8_init();
 
 	chip8_set_register_value(0, 0);
-	// TODO: Hardcoded 202 scares me
-	chip8_index = 202;
+	chip8_index = CHIP8_PROGRAM_START + 2;
 
 	// sprite v0 v0 1
 	uint8_t bytes[3] = { 0xD0, 0x01, 0x55 };
@@ -156,8 +155,7 @@ TEST(Chip8Interpreter, StepOnSpriteImpactsGraphicalMemoryWithManyRows) {
 	chip8_init();
 
 	chip8_set_register_value(0, 0);
-	// TODO: Hardcoded 202 scares me
-	chip8_index = 202;
+	chip8_index = CHIP8_PROGRAM_START + 2;
 
 	// sprite v0 v0 2
 	uint8_t bytes[4] = { 0xD0, 0x02, 0x55, 0x7E };
