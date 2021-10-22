@@ -11,7 +11,7 @@
 int chip8_instruction_pointer;
 int chip8_overflow_register;
 int chip8_index;
-uint8_t chip8_graphical_memory[32][64];
+uint8_t chip8_graphical_memory[64][32];
 uint8_t memory[4096];
 uint8_t chip8_registers[16];
 
@@ -85,7 +85,7 @@ void chip8_step(){
 			uint8_t sprite_row = memory[chip8_index + row];
 			for(int bit_position = 0; bit_position < 8; bit_position++){
 				uint8_t pixel = read_bit(sprite_row, bit_position);
-				chip8_graphical_memory[y_value + row][x_value + bit_position] = pixel;
+				chip8_graphical_memory[x_value + bit_position][y_value + row] = pixel;
 			}
 		}
 	} else if ((currentInstruction & 0xF000) == 0x8000) {

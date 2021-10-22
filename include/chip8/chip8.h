@@ -14,7 +14,7 @@ struct register_read_status{
 extern int chip8_instruction_pointer;
 extern int chip8_overflow_register;
 extern int chip8_index;
-extern uint8_t chip8_graphical_memory[32][64];
+extern uint8_t chip8_graphical_memory[64][32];
 
 // Initialize the emulator
 void chip8_init();

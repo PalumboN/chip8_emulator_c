@@ -5,6 +5,21 @@ extern "C" {
 	#include "chip8/assembler.h"
 }
 
+// Helpers
+
+void assert_row(uint8_t x, uint8_t y, uint8_t v0, uint8_t v1, uint8_t v2, uint8_t v3, uint8_t v4, uint8_t v5, uint8_t v6, uint8_t v7){
+	ASSERT_EQ(chip8_graphical_memory[x][y], v0);
+	ASSERT_EQ(chip8_graphical_memory[x + 1][y], v1);
+	ASSERT_EQ(chip8_graphical_memory[x + 2][y], v2);
+	ASSERT_EQ(chip8_graphical_memory[x + 3][y], v3);
+	ASSERT_EQ(chip8_graphical_memory[x + 4][y], v4);
+	ASSERT_EQ(chip8_graphical_memory[x + 5][y], v5);
+	ASSERT_EQ(chip8_graphical_memory[x + 6][y], v6);
+	ASSERT_EQ(chip8_graphical_memory[x + 7][y], v7);
+}
+
+// Tests
+
 TEST(Chip8Interpreter, InitialRegisterState) {
 	chip8_init();
 	EXPECT_EQ(chip8_get_register_value_unsafe(0), 0);
@@ -141,14 +156,7 @@ TEST(Chip8Interpreter, StepOnSpriteImpactsGraphicalMemory) {
 
 	chip8_step();
 
-	ASSERT_EQ(chip8_graphical_memory[0][0], 0);
-	ASSERT_EQ(chip8_graphical_memory[0][1], 1);
-	ASSERT_EQ(chip8_graphical_memory[0][2], 0);
-	ASSERT_EQ(chip8_graphical_memory[0][3], 1);
-	ASSERT_EQ(chip8_graphical_memory[0][4], 0);
-	ASSERT_EQ(chip8_graphical_memory[0][5], 1);
-	ASSERT_EQ(chip8_graphical_memory[0][6], 0);
-	ASSERT_EQ(chip8_graphical_memory[0][7], 1);
+	assert_row(0, 0, 0, 1, 0, 1, 0, 1, 0, 1);
 }
 
 TEST(Chip8Interpreter, StepOnSpriteImpactsGraphicalMemoryWithManyRows) {
@@ -163,12 +171,21 @@ TEST(Chip8Interpreter, StepOnSpriteImpactsGraphicalMemoryWithManyRows) {
 
 	chip8_step();
 
-	ASSERT_EQ(chip8_graphical_memory[1][0], 0);
-	ASSERT_EQ(chip8_graphical_memory[1][1], 1);
-	ASSERT_EQ(chip8_graphical_memory[1][2], 1);
-	ASSERT_EQ(chip8_graphical_memory[1][3], 1);
-	ASSERT_EQ(chip8_graphical_memory[1][4], 1);
-	ASSERT_EQ(chip8_graphical_memory[1][5], 1);
-	ASSERT_EQ(chip8_graphical_memory[1][6], 1);
-	ASSERT_EQ(chip8_graphical_memory[1][7], 0);
+	assert_row(0, 1, 0, 1, 1, 1, 1, 1, 1, 0);
+}
+
+TEST(Chip8Interpreter, StepOnSpriteImpactsGraphicalMemoryInTheMiddle) {
+	chip8_init();
+
+	chip8_set_register_value(5, 17);
+	chip8_set_register_value(6, 10);
+	chip8_index = CHIP8_PROGRAM_START + 2;
+
+	// sprite v5 v6 2
+	uint8_t bytes[4] = { 0xD5, 0x62, 0x55, 0x7E };
+	chip8_load(bytes, 4);
+
+	chip8_step();
+
+	assert_row(17, 11, 0, 1, 1, 1, 1, 1, 1, 0);
 }
