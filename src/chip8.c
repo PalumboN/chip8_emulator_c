@@ -10,8 +10,21 @@
 
 int chip8_instruction_pointer;
 int chip8_overflow_register;
+int chip8_index;
+uint8_t chip8_graphical_memory[32][64];
 uint8_t memory[4096];
 uint8_t chip8_registers[16];
+
+//Private Functions
+
+//Returns 0 or 1 to indicate if a bit was ON or OFF
+//Position is from left to right
+uint8_t read_bit(uint8_t byte_to_cut, uint8_t bit_position){
+	int shifting = 7 - bit_position;
+	return (byte_to_cut & (1 << shifting)) >> shifting;
+}
+
+//Public Functions
 
 
 void chip8_init(){
@@ -23,15 +36,16 @@ void chip8_load(const uint8_t* program, size_t size){
 }
 
 uint8_t chip8_get_register_value_unsafe(uint8_t register_id) {
-	return chip8_get_register_value_safe(register_id).value;
+	return chip8_registers[register_id];
 }
 
 struct register_read_status chip8_get_register_value_safe(uint8_t register_id){
 	struct register_read_status status;
 	if (register_id > 15) {
 		status.status = 1; //Error
+		status.value = 0xBA;
 	} else {
-		status.value = chip8_registers[register_id];
+		status.value = chip8_get_register_value_unsafe(register_id);
 		status.status = 0; //Success
 	}
 	return status;
@@ -59,6 +73,21 @@ void chip8_step(){
 	//If this is a JUMP
 	if ((currentInstruction & 0xF000) == 0x1000){
 		chip8_instruction_pointer = currentInstruction & 0x0FFF;
+	} else if ((currentInstruction & 0xF000) == 0xD000) {
+		// sprite VX VY N
+		uint8_t x_register_id = (currentInstruction & 0x0F00) >> 8;
+		uint8_t y_register_id = (currentInstruction & 0x00F0) >> 4;
+		uint8_t sprite_height = currentInstruction & 0x000F;
+		uint8_t x_value = chip8_get_register_value_unsafe(x_register_id);
+		uint8_t y_value = chip8_get_register_value_unsafe(y_register_id);
+
+		for(int i = 0; i < sprite_height; i++){
+			uint8_t sprite_row = memory[chip8_index + i];
+			for(int bit_position = 0; bit_position < 8; bit_position++){
+				uint8_t pixel = read_bit(sprite_row, bit_position);
+				chip8_graphical_memory[y_value + i][x_value + bit_position] = pixel;
+			}
+		}
 	} else if ((currentInstruction & 0xF000) == 0x8000) {
 		// VX += VY
 		uint8_t left_register_id = (currentInstruction & 0x0F00) >> 8;

@@ -128,3 +128,49 @@ TEST(Chip8Interpreter, StepOnRegisterAccumulatorAdvancesInstructionPointer) {
 	chip8_step();
 	EXPECT_EQ(chip8_instruction_pointer, previousInstructionPointer + 2);
 }
+
+TEST(Chip8Interpreter, StepOnSpriteImpactsGraphicalMemory) {
+	chip8_init();
+
+	chip8_set_register_value(0, 0);
+	// TODO: Hardcoded 202 scares me
+	chip8_index = 202;
+
+	// sprite v0 v0 1
+	uint8_t bytes[3] = { 0xD0, 0x01, 0x55 };
+	chip8_load(bytes, 3);
+
+	chip8_step();
+
+	ASSERT_EQ(chip8_graphical_memory[0][0], 0);
+	ASSERT_EQ(chip8_graphical_memory[0][1], 1);
+	ASSERT_EQ(chip8_graphical_memory[0][2], 0);
+	ASSERT_EQ(chip8_graphical_memory[0][3], 1);
+	ASSERT_EQ(chip8_graphical_memory[0][4], 0);
+	ASSERT_EQ(chip8_graphical_memory[0][5], 1);
+	ASSERT_EQ(chip8_graphical_memory[0][6], 0);
+	ASSERT_EQ(chip8_graphical_memory[0][7], 1);
+}
+
+TEST(Chip8Interpreter, StepOnSpriteImpactsGraphicalMemoryWithManyRows) {
+	chip8_init();
+
+	chip8_set_register_value(0, 0);
+	// TODO: Hardcoded 202 scares me
+	chip8_index = 202;
+
+	// sprite v0 v0 2
+	uint8_t bytes[4] = { 0xD0, 0x02, 0x55, 0x7E };
+	chip8_load(bytes, 4);
+
+	chip8_step();
+
+	ASSERT_EQ(chip8_graphical_memory[1][0], 0);
+	ASSERT_EQ(chip8_graphical_memory[1][1], 1);
+	ASSERT_EQ(chip8_graphical_memory[1][2], 1);
+	ASSERT_EQ(chip8_graphical_memory[1][3], 1);
+	ASSERT_EQ(chip8_graphical_memory[1][4], 1);
+	ASSERT_EQ(chip8_graphical_memory[1][5], 1);
+	ASSERT_EQ(chip8_graphical_memory[1][6], 1);
+	ASSERT_EQ(chip8_graphical_memory[1][7], 0);
+}

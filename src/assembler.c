@@ -6,6 +6,7 @@
  */
 
 #include "chip8/assembler.h"
+#include <stdlib.h>
 
 struct chip8_program chip8_assembler_init(){
 	struct chip8_program program;

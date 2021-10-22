@@ -4,6 +4,7 @@ project(chip8)
 
 # GoogleTest requires at least C++11
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_C_STANDARD 99)
 
 add_library(Chip8Assembler src/assembler.c)
 add_library(Chip8Lib src/chip8.c)
