@@ -144,6 +144,39 @@ TEST(Chip8Interpreter, StepOnRegisterAccumulatorAdvancesInstructionPointer) {
 	EXPECT_EQ(chip8_instruction_pointer, previousInstructionPointer + 2);
 }
 
+//Tests on Substraction
+
+TEST(Chip8Interpreter, StepOnRegisterSubstraction) {
+	chip8_init();
+
+	chip8_set_register_value(1, 42);
+	chip8_set_register_value(2, 17);
+
+	// V1 -= V2
+	uint8_t bytes[2] = { 0x81, 0x25 };
+	chip8_load(bytes, 2);
+
+	chip8_step();
+	EXPECT_EQ(chip8_get_register_value_unsafe(1), 25);
+}
+
+TEST(Chip8Interpreter, StepOnRegisterSubstractorAdvancesInstructionPointer) {
+	chip8_init();
+
+	chip8_set_register_value(1, 0xFF);
+	chip8_set_register_value(2, 0x01);
+
+	// V1 -= V2
+	uint8_t bytes[2] = { 0x81, 0x25 };
+	chip8_load(bytes, 2);
+
+	int previousInstructionPointer = chip8_instruction_pointer;
+	chip8_step();
+	EXPECT_EQ(chip8_instruction_pointer, previousInstructionPointer + 2);
+}
+
+//Tests on Graphical Memory
+
 TEST(Chip8Interpreter, StepOnSpriteImpactsGraphicalMemory) {
 	chip8_init();
 

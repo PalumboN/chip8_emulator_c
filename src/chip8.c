@@ -86,6 +86,8 @@ void chip8_doSprite(uint16_t instruction){
 	}
 }
 
+// Arithmetic Functions
+
 void chip8_doAdd(uint16_t instruction){
 	// VX += VY
 	uint8_t left_register_id = (instruction & 0x0F00) >> 8;
@@ -100,6 +102,30 @@ void chip8_doAdd(uint16_t instruction){
 	chip8_instruction_pointer += 2;
 }
 
+void chip8_doSub(uint16_t instruction){
+	// VX -= VY
+	uint8_t left_register_id = (instruction & 0x0F00) >> 8;
+	uint8_t right_register_id = (instruction & 0x00F0) >> 4;
+	uint8_t left_value = chip8_get_register_value_unsafe(left_register_id);
+	uint8_t right_value = chip8_get_register_value_unsafe(right_register_id);
+
+	uint16_t result = left_value - right_value;
+
+	chip8_set_register_value(left_register_id, result & 0xFF);
+	chip8_instruction_pointer += 2;
+}
+
+void chip8_doArithmetics(uint16_t instruction){
+	switch(instruction & 0x000F){
+	case 0x4:
+		chip8_doAdd(instruction);
+		break;
+	case 0x5:
+		chip8_doSub(instruction);
+		break;
+	}
+}
+
 void chip8_step(){
 	uint8_t higher = memory[chip8_instruction_pointer];
 	uint8_t lower = memory[chip8_instruction_pointer + 1];
@@ -112,8 +138,11 @@ void chip8_step(){
 	case 0xD000: // SPRITE
 		chip8_doSprite(currentInstruction);
 		break;
-	case 0x8000: // ADDITION
-		chip8_doAdd(currentInstruction);
+	case 0x8000: // ARITHMETICS
+		chip8_doArithmetics(currentInstruction);
+		break;
+	case 0x8005: // SUBSTRACTION
+		chip8_doSub(currentInstruction);
 		break;
 	default:
 		chip8_instruction_pointer += 2;
