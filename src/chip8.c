@@ -105,14 +105,17 @@ void chip8_step(){
 	uint8_t lower = memory[chip8_instruction_pointer + 1];
 	uint16_t currentInstruction = (higher << 8) + lower;
 
-	//If this is a JUMP
-	if ((currentInstruction & 0xF000) == 0x1000){
+	switch(currentInstruction & 0xF000){
+	case 0x1000: // JUMP
 		chip8_doJump(currentInstruction);
-	} else if ((currentInstruction & 0xF000) == 0xD000) {
+		break;
+	case 0xD000: // SPRITE
 		chip8_doSprite(currentInstruction);
-	} else if ((currentInstruction & 0xF000) == 0x8000) {
+		break;
+	case 0x8000: // ADDITION
 		chip8_doAdd(currentInstruction);
-	} else{
+		break;
+	default:
 		chip8_instruction_pointer += 2;
 	}
 }
