@@ -65,7 +65,7 @@ TEST(Chip8Interpreter, StepAdvancesProgramCounter) {
 }
 
 TEST(Chip8Interpreter, StepOnJumpMovesProgramCounter) {
-	chip8_program program = chip8_assembler_init();
+	chip8_program_ptr program = chip8_assembler_init();
 	chip8_init();
 
 	chip8_jump(program, 0x789);
@@ -175,7 +175,7 @@ TEST(Chip8Interpreter, StepOnSpriteImpactsGraphicalMemoryWithManyRows) {
 }
 
 TEST(Chip8Interpreter, StepOnSpriteImpactsGraphicalMemoryInTheMiddle) {
-	chip8_program program = chip8_assembler_init();
+	chip8_program_ptr program = chip8_assembler_init();
 	chip8_init();
 
 	int x_register_id = 5;

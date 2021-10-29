@@ -9,8 +9,10 @@ set(CMAKE_C_STANDARD 99)
 add_library(Chip8Assembler src/assembler.c)
 add_library(Chip8Lib src/chip8.c)
 add_executable(Chip8App src/main.c)
+add_executable(Chip8Bench src/mainBench.c)
 
 target_link_libraries(Chip8App Chip8Lib)
+target_link_libraries(Chip8Bench Chip8Lib)
 include_directories(include)
 
 # Tests

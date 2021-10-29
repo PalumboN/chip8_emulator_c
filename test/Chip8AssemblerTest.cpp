@@ -5,7 +5,7 @@ extern "C" {
 }
 
 TEST(Chip8Assembler, Initial) {
-	chip8_program program;
+	chip8_program_ptr program;
 	program = chip8_assembler_init();
 	chip8_jump(program, 0x789);
 
@@ -16,7 +16,7 @@ TEST(Chip8Assembler, Initial) {
 }
 
 TEST(Chip8Assembler, ChainJumps) {
-	chip8_program program;
+	chip8_program_ptr program;
 	program = chip8_assembler_init();
 	chip8_jump(program, 0x789);
 	chip8_jump(program, 0x654);
@@ -30,7 +30,7 @@ TEST(Chip8Assembler, ChainJumps) {
 }
 
 TEST(Chip8Assembler, RawData) {
-	chip8_program program;
+	chip8_program_ptr program;
 	program = chip8_assembler_init();
 	chip8_raw_data(program, 0x66);
 	chip8_raw_data(program, 0x77);
@@ -42,7 +42,7 @@ TEST(Chip8Assembler, RawData) {
 }
 
 TEST(Chip8Assembler, Sprite) {
-	chip8_program program;
+	chip8_program_ptr program;
 	program = chip8_assembler_init();
 	chip8_sprite(program, 0xA, 0x7, 0xF);
 
@@ -54,7 +54,7 @@ TEST(Chip8Assembler, Sprite) {
 }
 
 TEST(Chip8Assembler, SpriteAvancesStream) {
-	chip8_program program;
+	chip8_program_ptr program;
 	program = chip8_assembler_init();
 	chip8_sprite(program, 0xA, 0x7, 0xF);
 
@@ -64,7 +64,7 @@ TEST(Chip8Assembler, SpriteAvancesStream) {
 }
 
 TEST(Chip8Assembler, RawDataAvancesStream) {
-	chip8_program program = chip8_assembler_init();
+	chip8_program_ptr program = chip8_assembler_init();
 	chip8_raw_data(program, 0xA);
 
 	ASSERT_GT(chip8_get_program_next(program), chip8_get_program_start(program));
