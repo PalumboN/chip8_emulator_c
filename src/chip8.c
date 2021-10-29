@@ -15,6 +15,38 @@ uint8_t chip8_graphical_memory[64][32];
 uint8_t memory[4096];
 uint8_t chip8_registers[16];
 
+// Internal definition of instructions
+// Private to the implementation
+
+void chip8_doNonImplementedInstruction(uint16_t instruction);
+void chip8_doJump(uint16_t instruction);
+void chip8_doArithmetics(uint16_t instruction);
+void chip8_doSprite(uint16_t instruction);
+
+// This is an array of 16 elements
+// Each element is a function pointer
+// The pointed function does:
+//   - return void
+//   - have one uint16_t parameter
+void (*function_table[16])(uint16_t) = {
+		chip8_doNonImplementedInstruction,// 0
+		chip8_doJump,// 1
+		chip8_doNonImplementedInstruction,// 2
+		chip8_doNonImplementedInstruction,// 3
+		chip8_doNonImplementedInstruction,// 4
+		chip8_doNonImplementedInstruction,// 5
+		chip8_doNonImplementedInstruction,// 6
+		chip8_doNonImplementedInstruction,// 7
+		chip8_doArithmetics,// 8
+		chip8_doNonImplementedInstruction,// 9
+		chip8_doNonImplementedInstruction,// A
+		chip8_doNonImplementedInstruction,// B
+		chip8_doNonImplementedInstruction,// C
+		chip8_doSprite,// D
+		chip8_doNonImplementedInstruction,// E
+		chip8_doNonImplementedInstruction,// F
+};
+
 //Private Functions
 
 //Returns 0 or 1 to indicate if a bit was ON or OFF
@@ -86,6 +118,11 @@ void chip8_doSprite(uint16_t instruction){
 	}
 }
 
+void chip8_doNonImplementedInstruction(uint16_t instruction){
+	printf("Calling an unimplemented instruction: %04x", instruction);
+	chip8_instruction_pointer += 2;
+}
+
 // Arithmetic Functions
 
 void chip8_doAdd(uint16_t instruction){
@@ -131,20 +168,7 @@ void chip8_step(){
 	uint8_t lower = memory[chip8_instruction_pointer + 1];
 	uint16_t currentInstruction = (higher << 8) + lower;
 
-	switch(currentInstruction & 0xF000){
-	case 0x1000: // JUMP
-		chip8_doJump(currentInstruction);
-		break;
-	case 0xD000: // SPRITE
-		chip8_doSprite(currentInstruction);
-		break;
-	case 0x8000: // ARITHMETICS
-		chip8_doArithmetics(currentInstruction);
-		break;
-	case 0x8005: // SUBSTRACTION
-		chip8_doSub(currentInstruction);
-		break;
-	default:
-		chip8_instruction_pointer += 2;
-	}
+	int index = (currentInstruction & 0xF000) >> 12;
+	void (*theFunctionToExecute)(uint16_t) = function_table[index];
+	theFunctionToExecute(currentInstruction);
 }
