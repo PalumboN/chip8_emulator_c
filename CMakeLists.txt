@@ -8,10 +8,10 @@ set(CMAKE_C_STANDARD 99)
 
 # Add here your targets, dependencies, include directories
 add_library(Chip8Assembler src/assembler.c)
-target_include_directories(Chip8Assembler PUBLIC include)
+target_include_directories(Chip8Assembler PUBLIC include/assembler)
 
 add_library(Chip8Lib src/chip8.c)
-target_include_directories(Chip8Lib PUBLIC include)
+target_include_directories(Chip8Lib PUBLIC include/chip)
 
 add_executable(Chip8App src/main.c)
 target_link_libraries(Chip8App Chip8Assembler Chip8Lib)
